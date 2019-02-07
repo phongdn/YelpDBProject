@@ -32,7 +32,8 @@ namespace milestone1
         {
             InitializeComponent();
             addStates();
-            addCities();
+            //addCities();
+            cityList.IsEnabled = false; //enable once a state has been chosen
             addColumns2Grid();
         }
 
@@ -69,7 +70,7 @@ namespace milestone1
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "SELECT DISTINCT city FROM business ORDER BY city;";
+                    cmd.CommandText = "SELECT DISTINCT city FROM business WHERE state = '" + stateList.SelectedItem.ToString() + "' ORDER BY city;";
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -116,82 +117,63 @@ namespace milestone1
         private void StateList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             businessGrid.Items.Clear();
-            if(stateList.SelectedIndex > -1)
+            cityList.Items.Clear(); // empty city list since changing states will contain different list of cities
+            if (stateList.SelectedIndex > -1)
             {
-                if (cityList.SelectedIndex > -1)
-                {
-                    organize();
-                    return;
-                }
+               // if (cityList.SelectedIndex > -1)
+               // {
+                   // organize();
+                    //return;
+               // }
                 using (var conn = new NpgsqlConnection(buildConnString()))
                 {
                     conn.Open();
                     using (var cmd = new NpgsqlCommand())
                     {
                         cmd.Connection = conn;
-                        cmd.CommandText = "SELECT name,state FROM business WHERE state = '" + stateList.SelectedItem.ToString() + "';";
+                        //cmd.CommandText = "SELECT DISTINCT name,state FROM business WHERE state = '" + stateList.SelectedItem.ToString() + "';";
                         using (var reader = cmd.ExecuteReader())
                         {
-                            while (reader.Read())
-                            {
-                                businessGrid.Items.Add(new Business() { name = reader.GetString(0), state = reader.GetString(1) });
-                            }
+                            cityList.IsEnabled = true;
+                            addCities();
+                            //while (reader.Read())
+                            //{
+                            //    businessGrid.Items.Add(new Business() { name = reader.GetString(0), state = reader.GetString(1) });
+                            //}
                         }
-                    }
+                    }              
                     conn.Close();
                 }
             }
         }
 
         private void CityList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //businessGrid.Items.Clear();
+        {           
+            businessGrid.Items.Clear();
             if (cityList.SelectedIndex > -1)
             {
-                if (stateList.SelectedIndex > -1)
-                {
-                    organize();
-                    return;
-                }
+                //if (stateList.SelectedIndex > -1)
+                //{
+                //   // organize();
+                //    //return;
+                //}
                 using (var conn = new NpgsqlConnection(buildConnString()))
                 {
                     conn.Open();
                     using (var cmd = new NpgsqlCommand())
                     {
                         cmd.Connection = conn;
-                        cmd.CommandText = "SELECT name,city FROM business WHERE city = '" + cityList.SelectedItem.ToString() + "';";
+                        cmd.CommandText = "SELECT DISTINCT name,state,city FROM business WHERE city = '" + cityList.SelectedItem.ToString() + "' AND state = '" + stateList.SelectedItem.ToString() + "';";
                         using (var reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                businessGrid.Items.Add(new Business() { name = reader.GetString(0), city = reader.GetString(1) });
+                                businessGrid.Items.Add(new Business() { name = reader.GetString(0), state = reader.GetString(1), city = reader.GetString(2) });
                             }
                         }
                     }
                     conn.Close();
                 }
-            }
-        }
-
-        private void organize() //displays both city and state and orders it by name
-        {
-            //businessGrid.Items.Clear();
-            using (var conn = new NpgsqlConnection(buildConnString()))
-            {
-                conn.Open();
-                using (var cmd = new NpgsqlCommand())
-                {
-                    cmd.Connection = conn;
-                    cmd.CommandText = "SELECT name,state,city FROM business WHERE city = '" + cityList.SelectedItem.ToString() + "' AND state = '" + stateList.SelectedItem.ToString() + "' ORDER BY name;";
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            businessGrid.Items.Add(new Business() { name = reader.GetString(0), state = reader.GetString(1), city = reader.GetString(2) });
-                        }
-                    }
-                }
-                conn.Close();
             }
         }
     }
