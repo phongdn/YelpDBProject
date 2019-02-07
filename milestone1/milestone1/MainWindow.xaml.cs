@@ -25,12 +25,14 @@ namespace milestone1
         {
             public string name { get; set; }
             public string state { get; set; }
+            public string city { get; set; }
 
         }
         public MainWindow()
         {
             InitializeComponent();
             addStates();
+            addCities();
             addColumns2Grid();
         }
 
@@ -46,7 +48,7 @@ namespace milestone1
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "SELECT distinct date FROM business ORDER BY state;";
+                    cmd.CommandText = "SELECT DISTINCT state FROM business ORDER BY state;";
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read() )
@@ -59,10 +61,31 @@ namespace milestone1
             }
         }
 
+        public void addCities()
+        {
+            using (var conn = new NpgsqlConnection(buildConnString()))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "SELECT DISTINCT city FROM business ORDER BY city;";
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            cityList.Items.Add(reader.GetString(0));
+                        }
+                    }
+                }
+                conn.Close();
+            }
+        }
+
         private string buildConnString()
         {   //If using VM: Host=vmhost
             //Port=5432
-            return "Host=localhost; Username=postgres; Password=password; Database=Milestone1DB";
+            return "Host=localhost; Username=postgres; Password=password; Database = milestone1db";
         }
 
         public void addColumns2Grid()
@@ -78,9 +101,14 @@ namespace milestone1
             col2.Binding = new Binding("state");
             businessGrid.Columns.Add(col2);
 
-            businessGrid.Items.Add(new Business() { name = "business1", state = "WA" });
-            businessGrid.Items.Add(new Business() { name = "business2", state = "CA" });
-            businessGrid.Items.Add(new Business() { name = "business3", state = "ID" });
+            DataGridTextColumn col3 = new DataGridTextColumn();
+            col3.Header = "City";
+            col3.Binding = new Binding("city");
+            businessGrid.Columns.Add(col3);
+
+            //businessGrid.Items.Add(new Business() { name = "business1", state = "WA" });
+            //businessGrid.Items.Add(new Business() { name = "business2", state = "CA" });
+            //businessGrid.Items.Add(new Business() { name = "business3", state = "ID" });
 
 
         }
@@ -90,13 +118,18 @@ namespace milestone1
             businessGrid.Items.Clear();
             if(stateList.SelectedIndex > -1)
             {
+                if (cityList.SelectedIndex > -1)
+                {
+                    organize();
+                    return;
+                }
                 using (var conn = new NpgsqlConnection(buildConnString()))
                 {
                     conn.Open();
                     using (var cmd = new NpgsqlCommand())
                     {
                         cmd.Connection = conn;
-                        cmd.CommandText = "SELECT name, state FROM busines WHERE state = '" + stateList.SelectedItem.ToString() + "';";
+                        cmd.CommandText = "SELECT name,state FROM business WHERE state = '" + stateList.SelectedItem.ToString() + "';";
                         using (var reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
@@ -107,6 +140,58 @@ namespace milestone1
                     }
                     conn.Close();
                 }
+            }
+        }
+
+        private void CityList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //businessGrid.Items.Clear();
+            if (cityList.SelectedIndex > -1)
+            {
+                if (stateList.SelectedIndex > -1)
+                {
+                    organize();
+                    return;
+                }
+                using (var conn = new NpgsqlConnection(buildConnString()))
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = conn;
+                        cmd.CommandText = "SELECT name,city FROM business WHERE city = '" + cityList.SelectedItem.ToString() + "';";
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                businessGrid.Items.Add(new Business() { name = reader.GetString(0), city = reader.GetString(1) });
+                            }
+                        }
+                    }
+                    conn.Close();
+                }
+            }
+        }
+
+        private void organize() //displays both city and state and orders it by name
+        {
+            //businessGrid.Items.Clear();
+            using (var conn = new NpgsqlConnection(buildConnString()))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "SELECT name,state,city FROM business WHERE city = '" + cityList.SelectedItem.ToString() + "' AND state = '" + stateList.SelectedItem.ToString() + "' ORDER BY name;";
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            businessGrid.Items.Add(new Business() { name = reader.GetString(0), state = reader.GetString(1), city = reader.GetString(2) });
+                        }
+                    }
+                }
+                conn.Close();
             }
         }
     }

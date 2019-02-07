@@ -11,9 +11,11 @@
             <ColumnDefinition Width="229*"/>
             <ColumnDefinition Width="563*"/>
         </Grid.ColumnDefinitions>
-        <ComboBox x:Name="stateList" HorizontalAlignment="Left" Margin="79,110,0,0" VerticalAlignment="Top" Width="120" Grid.Column="1" SelectionChanged="StateList_SelectionChanged"/>
-        <Label Content="States" HorizontalAlignment="Left" Margin="23,110,0,0" VerticalAlignment="Top" FontSize="14" Grid.Column="1"/>
+        <ComboBox x:Name="stateList" HorizontalAlignment="Left" Margin="65,73,0,0" VerticalAlignment="Top" Width="120" Grid.Column="1" SelectionChanged="StateList_SelectionChanged"/>
+        <Label Content="States" HorizontalAlignment="Left" Margin="0,66,0,0" VerticalAlignment="Top" FontSize="14" Grid.Column="1"/>
         <DataGrid x:Name="businessGrid" HorizontalAlignment="Left" Height="214" Margin="190,163,0,0" VerticalAlignment="Top" Width="381" FontSize="14" Grid.ColumnSpan="2"/>
+        <Label Content="City" Grid.Column="1" HorizontalAlignment="Left" Margin="0,100,0,0" VerticalAlignment="Top" FontSize="14"/>
+        <ComboBox x:Name="cityList" Grid.Column="1" HorizontalAlignment="Left" Margin="65,107,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="CityList_SelectionChanged"/>
 
     </Grid>
 </Window>
