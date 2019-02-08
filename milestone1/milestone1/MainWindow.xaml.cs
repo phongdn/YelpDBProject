@@ -32,9 +32,9 @@ namespace milestone1
         {
             InitializeComponent();
             addStates();
-            //addCities();
-            cityList.IsEnabled = false; //enable once a state has been chosen
-            addColumns2Grid();
+            //addCities(); //called in the StateList_SelectionChanged function
+            cityList.IsEnabled = false; //enable once a state has been chosen // Forces user to choose a state first
+            addColumns2Grid(); //creates name,state,city columns
         }
 
         public void addStates()
@@ -49,12 +49,12 @@ namespace milestone1
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "SELECT DISTINCT state FROM business ORDER BY state;";
+                    cmd.CommandText = "SELECT DISTINCT state FROM business ORDER BY state;"; //Queries list of all states
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read() )
                         {
-                            stateList.Items.Add(reader.GetString(0));
+                            stateList.Items.Add(reader.GetString(0)); //adds it to the drop down stateList box
                         }
                     }
                 }
@@ -62,7 +62,7 @@ namespace milestone1
             }
         }
 
-        public void addCities()
+        public void addCities() //queries cities list based on chosen state
         {
             using (var conn = new NpgsqlConnection(buildConnString()))
             {
@@ -75,7 +75,7 @@ namespace milestone1
                     {
                         while (reader.Read())
                         {
-                            cityList.Items.Add(reader.GetString(0));
+                            cityList.Items.Add(reader.GetString(0)); //add to cityList drop down box
                         }
                     }
                 }
@@ -86,10 +86,10 @@ namespace milestone1
         private string buildConnString()
         {   //If using VM: Host=vmhost
             //Port=5432
-            return "Host=localhost; Username=postgres; Password=password; Database = milestone1db";
+            return "Host=localhost; Username=postgres; Password=password; Database = milestone1db"; //login info for database
         }
 
-        public void addColumns2Grid()
+        public void addColumns2Grid() //creating columns
         {
             DataGridTextColumn col1 = new DataGridTextColumn();
             col1.Header = "Business Name";
@@ -114,17 +114,12 @@ namespace milestone1
 
         }
 
-        private void StateList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void StateList_SelectionChanged(object sender, SelectionChangedEventArgs e) //simply chooses a state, we don't want to list the names until a city is chosen
         {
-            businessGrid.Items.Clear();
+            businessGrid.Items.Clear(); //empty list so that we don't append new list
             cityList.Items.Clear(); // empty city list since changing states will contain different list of cities
             if (stateList.SelectedIndex > -1)
             {
-               // if (cityList.SelectedIndex > -1)
-               // {
-                   // organize();
-                    //return;
-               // }
                 using (var conn = new NpgsqlConnection(buildConnString()))
                 {
                     conn.Open();
@@ -134,7 +129,7 @@ namespace milestone1
                         //cmd.CommandText = "SELECT DISTINCT name,state FROM business WHERE state = '" + stateList.SelectedItem.ToString() + "';";
                         using (var reader = cmd.ExecuteReader())
                         {
-                            cityList.IsEnabled = true;
+                            cityList.IsEnabled = true; //enable city selection button
                             addCities();
                             //while (reader.Read())
                             //{
@@ -149,14 +144,9 @@ namespace milestone1
 
         private void CityList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {           
-            businessGrid.Items.Clear();
+            businessGrid.Items.Clear(); //we don't want to append new list to current list
             if (cityList.SelectedIndex > -1)
             {
-                //if (stateList.SelectedIndex > -1)
-                //{
-                //   // organize();
-                //    //return;
-                //}
                 using (var conn = new NpgsqlConnection(buildConnString()))
                 {
                     conn.Open();
