@@ -1,0 +1,35 @@
+SELECT COUNT(*) FROM Business
+
+/* Result: 11481 */
+
+
+SELECT COUNT(*) FROM Users
+
+/* Result: 192999 */
+
+
+SELECT COUNT(*) FROM Friends
+
+/* Result: 1052706 */
+
+
+SELECT COUNT(*) FROM Categories
+
+/* Result: 33619 */
+
+
+SELECT COUNT(*) FROM Hours
+
+/* Result: 55502 */
+
+
+
+SELECT COUNT(*) FROM Review
+
+/* Result: 416479 */
+
+
+
+SELECT COUNT(*) FROM Checkins
+
+/* Result: 67407 */
