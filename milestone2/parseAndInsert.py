@@ -13,7 +13,7 @@ def int2BoolStr (value):
 def insert2BusinessTable():
     #reading the JSON file
     with open('./yelp_business.JSON','r') as f:    
-        outfile =  open('./yelp_business.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
+        #outfile =  open('./yelp_business.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
         line = f.readline()
         count_line = 0
 
@@ -42,7 +42,7 @@ def insert2BusinessTable():
                 break  #if we get a single failure or error, end the loop
             conn.commit()
             # optionally you might write the INSERT statement to a file.
-            outfile.write(sql_str)
+            #outfile.write(sql_str)
 
             line = f.readline()
             count_line +=1
@@ -51,18 +51,18 @@ def insert2BusinessTable():
         conn.close()
     print("business list: ")
     print(count_line)
-    outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
+    #outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
     f.close()
 
 #   From milestone1:
 #
 # def parseObject(outfile, data):
 #     for key, value in data.items():
-#         outfile.write(cleanStr4SQL(key)+'\t')
+#         #outfile.write(cleanStr4SQL(key)+'\t')
 #         if (isinstance(value, dict)):
 #             parseObject(outfile, value)
 #         else:
-#             outfile.write(str(value)+'\t')
+#             #outfile.write(str(value)+'\t')
 
 def parseHours(h, bus_id): #Creates the list of SQL commands (hours, businessID)
     returnListOfSQL = [] #initialize list of SQL commands to return
@@ -84,7 +84,7 @@ def parseHours(h, bus_id): #Creates the list of SQL commands (hours, businessID)
 def insert2HoursTable():
     #reading the JSON file
     with open('./yelp_business.JSON','r') as f:    
-        outfile =  open('./yelp_hours.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
+        #outfile =  open('./yelp_hours.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
         line = f.readline()
         count_line = 0
         total_hours_added = 0
@@ -113,7 +113,7 @@ def insert2HoursTable():
                     return #if we get a single failure or error, end the loop
                 conn.commit()
                 # optionally you might write the INSERT statement to a file.
-                outfile.write(sql_str)
+                #outfile.write(sql_str)
                 total_hours_added += 1
 
             line = f.readline()
@@ -124,7 +124,7 @@ def insert2HoursTable():
     print("hours list: ")
     print(count_line)
     print(total_hours_added)
-    outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
+    #outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
     f.close()
 
 
@@ -134,7 +134,7 @@ def insert2HoursTable():
 def insert2CategoriesTable():
     #reading the JSON file
     with open('./yelp_business.JSON','r') as f:    
-        outfile =  open('./yelp_categories.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
+        #outfile =  open('./yelp_categories.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
         line = f.readline()
         count_line = 0
         total_categories_added = 0
@@ -166,7 +166,7 @@ def insert2CategoriesTable():
                     return  #if we get a single failure or error, end the loop
                 conn.commit()
                 # optionally you might write the INSERT statement to a file.
-                outfile.write(sql_str)
+                #outfile.write(sql_str)
                 total_categories_added += 1
 
             line = f.readline()
@@ -177,7 +177,7 @@ def insert2CategoriesTable():
     print("categories list: ")
     print(count_line)
     print(total_categories_added)
-    outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
+    #outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
     f.close()
 
 
@@ -238,7 +238,7 @@ def parseCheckins(time, bus_id): #Creates the list of SQL commands (hours, busin
 def insert2CheckinsTable():
     #reading the JSON file
     with open('./yelp_checkin.JSON','r') as f:    
-        outfile =  open('./yelp_checkins.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
+        #outfile =  open('./yelp_checkins.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
         line = f.readline()
         count_line = 0
         total_checkins_added = 0
@@ -270,7 +270,7 @@ def insert2CheckinsTable():
                     return #if we get a single failure or error, end the loop
                 conn.commit()
                 # optionally you might write the INSERT statement to a file.
-                outfile.write(sql_str)
+                #outfile.write(sql_str)
                 total_checkins_added += 1
 
             line = f.readline()
@@ -281,14 +281,14 @@ def insert2CheckinsTable():
     print("checkins list: ")
     print(count_line)
     print(total_checkins_added)
-    outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
+    #outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
     f.close()
 
 
 def insert2UserTable():
     #reading the JSON file
     with open('./yelp_user.JSON','r') as f:    
-        outfile =  open('./yelp_user.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
+        #outfile =  open('./yelp_user.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
         line = f.readline()
         count_line = 0
 
@@ -316,7 +316,7 @@ def insert2UserTable():
                 break  #if we get a single failure or error, end the loop
             conn.commit()
             # optionally you might write the INSERT statement to a file.
-            outfile.write(sql_str)
+            #outfile.write(sql_str)
 
             line = f.readline()
             count_line +=1
@@ -325,14 +325,14 @@ def insert2UserTable():
         conn.close()
     print("user list: ")
     print(count_line)
-    outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
+    #outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
     f.close()
 
 
 def insert2ReviewTable():
     #reading the JSON file
     with open('./yelp_review.JSON','r') as f:    
-        outfile =  open('./yelp_review.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
+        #outfile =  open('./yelp_review.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
         line = f.readline()
         count_line = 0
 
@@ -360,7 +360,7 @@ def insert2ReviewTable():
                 break  #if we get a single failure or error, end the loop
             conn.commit()
             # optionally you might write the INSERT statement to a file.
-            outfile.write(sql_str)
+            #outfile.write(sql_str)
 
             line = f.readline()
             count_line +=1
@@ -369,14 +369,14 @@ def insert2ReviewTable():
         conn.close()
     print("review list: ")
     print(count_line)
-    outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
+    #outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
     f.close()
 
 
 def insert2FriendTable():
     #reading the JSON file
     with open('./yelp_user.JSON','r') as f:    
-        outfile =  open('./yelp_friend.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
+        #outfile =  open('./yelp_friend.SQL', 'w')  #uncomment this line if you are writing the INSERT statements to an output file.
         line = f.readline()
         count_line = 0
         total_friends_added = 0
@@ -408,7 +408,7 @@ def insert2FriendTable():
                     break  #if we get a single failure or error, end the loop
                 conn.commit()
                 # optionally you might write the INSERT statement to a file.
-                outfile.write(sql_str)
+                #outfile.write(sql_str)
                 total_friends_added += 1
 
             line = f.readline()
@@ -419,7 +419,7 @@ def insert2FriendTable():
     print("friend list: ")
     print(count_line)
     print(total_friends_added)
-    outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
+    #outfile.close()  #uncomment this line if you are writing the INSERT statements to an output file.
     f.close()
 
 
