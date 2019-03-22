@@ -1,0 +1,28 @@
+﻿<Window x:Class="milestone1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:milestone1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="229*"/>
+            <ColumnDefinition Width="563*"/>
+        </Grid.ColumnDefinitions>
+        <ComboBox x:Name="stateList" HorizontalAlignment="Left" Margin="65,16,0,0" VerticalAlignment="Top" Width="120" Grid.Column="1" SelectionChanged="StateList_SelectionChanged"/>
+        <Label Content="States" HorizontalAlignment="Left" Margin="0,9,0,0" VerticalAlignment="Top" FontSize="14" Grid.Column="1"/>
+        <DataGrid x:Name="businessGrid" HorizontalAlignment="Left" Height="214" Margin="190,163,0,0" VerticalAlignment="Top" Width="381" FontSize="14" Grid.ColumnSpan="2" GotFocus="BusinessGrid_GotFocus"/>
+        <Label Content="City" Grid.Column="1" HorizontalAlignment="Left" Margin="0,43,0,0" VerticalAlignment="Top" FontSize="14"/>
+        <ComboBox x:Name="cityList" Grid.Column="1" HorizontalAlignment="Left" Margin="65,50,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="CityList_SelectionChanged"/>
+        <Label Content="Zipcode" Grid.Column="1" HorizontalAlignment="Left" Margin="0,77,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.173,0.058"/>
+        <Label Content="Categories" Grid.Column="1" HorizontalAlignment="Left" Margin="0,108,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.125,0.509"/>
+        <ComboBox x:Name="zipcodeList" Grid.Column="1" HorizontalAlignment="Left" Margin="65,81,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ZipcodeList_SelectionChanged"/>
+        <ComboBox x:Name="categoriesList" Grid.Column="1" HorizontalAlignment="Left" Margin="66,112,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="CategoriesList_SelectionChanged"/>
+        <Label Content="Reviews" Grid.Column="1" HorizontalAlignment="Left" Margin="427,16,0,0" VerticalAlignment="Top"/>
+        <DataGrid x:Name="reviewsGrid" Grid.Column="1" HorizontalAlignment="Left" Height="327" Margin="347,50,0,0" VerticalAlignment="Top" Width="206" SelectionChanged="DataGrid_SelectionChanged" GotFocus="ReviewsGrid_GotFocus"/>
+        <Button x:Name="addReviewButton" Content="Add Review" Grid.Column="1" HorizontalAlignment="Left" Margin="347,389,0,0" VerticalAlignment="Top" Width="75" GotFocus="AddReviewButton_GotFocus"/>
+
+    </Grid>
+</Window>
