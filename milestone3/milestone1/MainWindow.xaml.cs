@@ -26,7 +26,7 @@ namespace milestone1
         public class Business
         {
 
-            //SELECT DISTINCT business_name, address, city, statecode, postalcode, business_stars, review_rating, num_checkins
+            //SELECT DISTINCT business_name, address, city, statecode, postalcode, business_stars, review_rating, num_checkins, Business.business_id
             public string name { get; set; }
             public string state { get; set; }
             public string city { get; set; }
@@ -35,7 +35,7 @@ namespace milestone1
             public double stars { get; set; }
             public double rating { get; set; }
             public int checkins { get; set;}
-            //public string business_id { get; set; }
+            public string business_id { get; set; }
 
         }
 
@@ -200,6 +200,10 @@ namespace milestone1
             col11.Binding = new Binding("checkins");
             businessGrid.Columns.Add(col11);
 
+            DataGridTextColumn col12 = new DataGridTextColumn(); //out of order
+            col12.Header = "Business ID";
+            col12.Binding = new Binding("business_id");
+            businessGrid.Columns.Add(col12);
 
             //Reviews Grid
             DataGridTextColumn col5 = new DataGridTextColumn();
@@ -424,7 +428,8 @@ namespace milestone1
         private void SearchBusinessBtn_Click(object sender, RoutedEventArgs e)
         {
             businessGrid.Items.Clear(); //removes appending of items for each search
-            string baseCmd = "SELECT DISTINCT business_name,statecode,city,Business.business_id FROM Business, Categories WHERE city = '" + cityList.SelectedItem.ToString() +
+            string baseCmd = "SELECT DISTINCT business_name, address, city, statecode, postalcode, business_stars, review_rating, num_checkins, Business.business_id" +
+                " FROM Business, Categories WHERE city = '" + cityList.SelectedItem.ToString() +
                             "' AND statecode = '" + stateList.SelectedItem.ToString() + "' AND postalcode = '" + zipcodeList.SelectedItem.ToString() + "'"; 
             if (chosenCategoryGrid.Items.IsEmpty) //No chosen category
             {
@@ -439,7 +444,8 @@ namespace milestone1
                         {
                             while (reader.Read())
                             {
-                                businessGrid.Items.Add(new Business() { name = reader.GetString(0), state = reader.GetString(1), city = reader.GetString(2), business_id = reader.GetString(3) });
+                                businessGrid.Items.Add(new Business() { name = reader.GetString(0), address = reader.GetString(1), city = reader.GetString(2), state = reader.GetString(3), zip = reader.GetString(4), stars = reader.GetDouble(5),
+                                    rating = reader.GetDouble(6), checkins = reader.GetInt32(7), business_id = reader.GetString(8) });
                             }
                         }
                     }
@@ -451,7 +457,7 @@ namespace milestone1
 
                 //SQL Format: 
 
-                //SELECT DISTINCT business_name, address, city, statecode, postalcode, business_stars, review_rating, num_checkins
+                //SELECT DISTINCT business_name, address, city, statecode, postalcode, business_stars, review_rating, num_checkins, Business.business_id
                 // FROM Business, Categories
                 // WHERE
                 //Business.business_id IN(SELECT business_id
@@ -465,11 +471,17 @@ namespace milestone1
                 //     WHERE category_name = 'Breakfast & Brunch'))
                 //AND Business.business_id = Categories.business_id;
 
-
+                int closingParenthesis = 0;
                 string tempCmd = "";
                 foreach (Categories item in chosenCategoryGrid.Items) //loop through all items in this grid
                 {
-                    tempCmd = tempCmd + " AND category_name = '" + item.category_name + "'";
+                    tempCmd = tempCmd + " AND Business.business_id IN(SELECT business_id FROM Categories " +
+                        "WHERE category_name = '" + item.category_name + "' ";
+                    closingParenthesis++;
+                }
+                for(int i = 0; i < closingParenthesis; i++)
+                {
+                    tempCmd = tempCmd + ')';
                 }
                 tempCmd = tempCmd + " AND Business.business_id = Categories.business_id;";
                 tempCmd = baseCmd + tempCmd;
@@ -486,13 +498,27 @@ namespace milestone1
                         {
                             while (reader.Read())
                             {
-                                businessGrid.Items.Add(new Business() { name = reader.GetString(0), state = reader.GetString(1), city = reader.GetString(2), business_id = reader.GetString(3) });
+                                businessGrid.Items.Add(new Business()
+                                {
+                                    name = reader.GetString(0),
+                                    address = reader.GetString(1),
+                                    city = reader.GetString(2),
+                                    state = reader.GetString(3),
+                                    zip = reader.GetString(4),
+                                    stars = reader.GetDouble(5),
+                                    rating = reader.GetDouble(6),
+                                    checkins = reader.GetInt32(7),
+                                    business_id = reader.GetString(8)
+                                });
                             }
                         }
                     }
                     conn.Close();
                 }
             }
+
+            //update label for # of businesses
+            numBusinessLabel.Content = businessGrid.Items.Count.ToString();
         }
     }
 }
