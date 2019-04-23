@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:milestone1"
-        xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit" x:Class="milestone1.ShowCheckinsWindow"
         mc:Ignorable="d"
+        xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+        xmlns:visualizationToolkit="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit"
         Title="ShowCheckinsWindow" Height="302.624" Width="521.283">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -13,7 +14,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <chartingToolkit:Chart Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="253" Width="433" Title="Number of Check-ins per Day-of-Week" Name="myChart">
+        <chartingToolkit:Chart Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="253" Width="433" Title="Number of Check-ins per Day-of-Week" x:Name="MyChart">
             <chartingToolkit:ColumnSeries HorizontalAlignment="Left" Height="180.8" VerticalAlignment="Top" Width="302.4" Title="# of Check-ins" DependentValuePath="Value" IndependentValuePath="Key" ItemsSource="{Binding}"/>
         </chartingToolkit:Chart>
 

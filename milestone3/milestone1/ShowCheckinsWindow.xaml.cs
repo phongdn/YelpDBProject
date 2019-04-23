@@ -48,8 +48,8 @@ namespace milestone1
                     }
                 }
             }
-
-            myChart.DataContext = myChartData;
+            
+            //MyChart.DataContext = myChartData;
         }
     }
 }
