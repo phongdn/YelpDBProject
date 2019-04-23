@@ -35,6 +35,7 @@ namespace milestone1
             public string address { get; set; }
             public string zip { get; set; }
             public double stars { get; set; }
+            public int num_reviews { get; set; }
             public double rating { get; set; }
             public int checkins { get; set;}
             public string business_id { get; set; }
@@ -53,6 +54,13 @@ namespace milestone1
             public string category_name { get; set; }
         }
 
+        public class Hours
+        {
+            public string day { get; set; }
+            public string open { get; set; }
+            public string close { get; set; }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -60,9 +68,21 @@ namespace milestone1
             //addCities(); //called in the StateList_SelectionChanged function
             cityList.IsEnabled = zipcodeList.IsEnabled = categoriesGrid.IsEnabled = addReviewButton.IsEnabled = categoryAddBtn.IsEnabled =
                 categoryRemoveBtn.IsEnabled = chosenCategoryGrid.IsEnabled = searchBusinessBtn.IsEnabled = removeReviewBtn.IsEnabled = 
-                friendsReviewsGrid.IsEnabled = businessAddressTextBox.IsEnabled = businessNameTextBox.IsEnabled = false; //prevents user misuse
+                friendsReviewsGrid.IsEnabled = businessAddressTextBox.IsEnabled = businessNameTextBox.IsEnabled = ShowCheckinsBtn.IsEnabled =
+                selectedBusinessCategoriesGrid.IsEnabled = selectedBusinessHoursGrid.IsEnabled = sortResultsBox.IsEnabled =  false; //prevents user misuse
 
-            addColumns2Grid(); //creates name,state,city columns
+            addSorts();
+            addColumns2Grid(); 
+        }
+
+        public void addSorts()
+        {
+            sortResultsBox.Items.Add("Name(default)");
+            sortResultsBox.Items.Add("Highest Rated");
+            sortResultsBox.Items.Add("Most Reviewed");
+            sortResultsBox.Items.Add("Best Review Rating");
+            sortResultsBox.Items.Add("Most Checkins");
+            sortResultsBox.Items.Add("Nearest");
         }
 
         public void addStates()
@@ -195,13 +215,18 @@ namespace milestone1
             col9.Binding = new Binding("stars");
             businessGrid.Columns.Add(col9);
 
+            DataGridTextColumn col18 = new DataGridTextColumn(); //out of order
+            col18.Header = "# of Reviews";
+            col18.Binding = new Binding("num_reviews");
+            businessGrid.Columns.Add(col18);
+
             DataGridTextColumn col10 = new DataGridTextColumn(); //out of order
-            col10.Header = "Ratings";
+            col10.Header = "Avg Review Rating";
             col10.Binding = new Binding("rating");
             businessGrid.Columns.Add(col10);
 
             DataGridTextColumn col11 = new DataGridTextColumn(); //out of order
-            col11.Header = "# of Checkins";
+            col11.Header = "Total Checkins";
             col11.Binding = new Binding("checkins");
             businessGrid.Columns.Add(col11);
 
@@ -236,6 +261,7 @@ namespace milestone1
             col7.Width = 200;
             categoriesGrid.Columns.Add(col7);
 
+            //chosen cateogries grid
             DataGridTextColumn col8 = new DataGridTextColumn();
             col8.Header = "Category_Name";
             col8.Binding = new Binding("category_name");
@@ -243,6 +269,32 @@ namespace milestone1
             chosenCategoryGrid.Columns.Add(col8);
             chosenCategoryGrid.HeadersVisibility = DataGridHeadersVisibility.None; //hide headers since grid is too small to need it
 
+            //selected business categories grid
+            DataGridTextColumn col14 = new DataGridTextColumn(); //out of order
+            col14.Header = "Category Name";
+            col14.Binding = new Binding("category_name");
+            col14.Width = 100;
+            selectedBusinessCategoriesGrid.Columns.Add(col14);
+            selectedBusinessCategoriesGrid.HeadersVisibility = DataGridHeadersVisibility.None; //hide headers
+
+            //selected business hours grid
+            DataGridTextColumn col15 = new DataGridTextColumn(); //out of order
+            col15.Header = "Day";
+            col15.Binding = new Binding("day");
+            col15.Width = 50;
+            selectedBusinessHoursGrid.Columns.Add(col15);
+
+            DataGridTextColumn col16 = new DataGridTextColumn(); //out of order
+            col16.Header = "Opens";
+            col16.Binding = new Binding("open");
+            col16.Width = 50;
+            selectedBusinessHoursGrid.Columns.Add(col16);
+
+            DataGridTextColumn col17 = new DataGridTextColumn(); //out of order
+            col17.Header = "Closes";
+            col17.Binding = new Binding("close");
+            col17.Width = 50;
+            selectedBusinessHoursGrid.Columns.Add(col17);
         }
 
         private void StateList_SelectionChanged(object sender, SelectionChangedEventArgs e) //simply chooses a state, we don't want to list the names until a city is chosen
@@ -361,6 +413,11 @@ namespace milestone1
         private void BusinessGrid_GotFocus(object sender, RoutedEventArgs e) //business selected
         {
             reviewsGrid.Items.Clear(); //prevent appending previous list
+            selectedBusinessCategoriesGrid.Items.Clear();
+            selectedBusinessHoursGrid.Items.Clear();
+            friendsReviewsGrid.Items.Clear();
+
+            //set currentSelectedBusiness
             currentCell = (Business)businessGrid.CurrentCell.Item;
 
             //update textbox below:
@@ -368,6 +425,11 @@ namespace milestone1
             businessNameTextBox.Text = currentCell.name;
             businessAddressTextBox.IsEnabled = true;
             businessAddressTextBox.Text = currentCell.address;
+            
+            //enable related grid
+            ShowCheckinsBtn.IsEnabled = true;
+            selectedBusinessHoursGrid.IsEnabled = true;
+            selectedBusinessCategoriesGrid.IsEnabled = true;
 
             if(currentUsername != "")
             {
@@ -376,12 +438,13 @@ namespace milestone1
 
             //MessageBox.Show("name = "+ temp.name+" city =  "+ temp.city + " statecode = " + temp.state);
             
-            //Populate the list of reviews
+            
             using (var conn = new NpgsqlConnection(buildConnString()))
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand())
                 {
+                    //Populate the list of reviews for selected business
                     cmd.Connection = conn;
                     cmd.CommandText = "SELECT text, review_stars, review_id FROM Review, Business WHERE Review.business_id = Business.business_id AND Business.business_name = '" + currentCell.name + "';";
                     using (var reader = cmd.ExecuteReader())
@@ -391,8 +454,31 @@ namespace milestone1
                             reviewsGrid.Items.Add(new Reviews() { text = reader.GetString(0), stars = reader.GetDouble(1), review_id = reader.GetString(2) });
                         }
                     }
+                    //enable edits of reviews
                     addReviewButton.IsEnabled = true;
                     removeReviewBtn.IsEnabled = true;
+
+
+                    //Populate the list of categories for selected business
+                    cmd.CommandText = "SELECT category_name FROM Categories WHERE Categories.business_id = '" + currentCell.business_id + "'";
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            selectedBusinessCategoriesGrid.Items.Add(new Categories() { category_name = reader.GetString(0)});
+                        }
+                    }
+
+                    //Populate the list of hours for selected business
+                    cmd.CommandText = "SELECT week_day, closes, opens FROM Hours WHERE business_id = '" + currentCell.business_id + "'";
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            //open and close are SQL time objects
+                            selectedBusinessHoursGrid.Items.Add(new Hours() { day = reader.GetString(0), close = reader.GetValue(1).ToString(), open = reader.GetValue(2).ToString() });
+                        }
+                    }
                 }
                 conn.Close();
             }
@@ -403,7 +489,7 @@ namespace milestone1
 
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            //Not in use
         }
 
         private void AddReviewButton_GotFocus(object sender, RoutedEventArgs e) //review selected
@@ -460,7 +546,7 @@ namespace milestone1
             businessNameTextBox.IsEnabled = false;
 
             
-            string baseCmd = "SELECT DISTINCT business_name, address, city, statecode, postalcode, business_stars, review_rating, num_checkins, Business.business_id" +
+            string baseCmd = "SELECT DISTINCT business_name, address, city, statecode, postalcode, business_stars, review_rating, num_checkins, Business.business_id, business_review_count" +
                 " FROM Business, Categories WHERE city = '" + cityList.SelectedItem.ToString() +
                             "' AND statecode = '" + stateList.SelectedItem.ToString() + "' AND postalcode = '" + zipcodeList.SelectedItem.ToString() + "'"; 
             if (chosenCategoryGrid.Items.IsEmpty) //No chosen category
@@ -477,7 +563,7 @@ namespace milestone1
                             while (reader.Read())
                             {
                                 businessGrid.Items.Add(new Business() { name = reader.GetString(0), address = reader.GetString(1), city = reader.GetString(2), state = reader.GetString(3), zip = reader.GetString(4), stars = reader.GetDouble(5),
-                                    rating = reader.GetDouble(6), checkins = reader.GetInt32(7), business_id = reader.GetString(8) });
+                                    rating = reader.GetDouble(6), checkins = reader.GetInt32(7), business_id = reader.GetString(8), num_reviews = reader.GetInt32(9) });
                             }
                         }
                     }
@@ -540,7 +626,8 @@ namespace milestone1
                                     stars = reader.GetDouble(5),
                                     rating = reader.GetDouble(6),
                                     checkins = reader.GetInt32(7),
-                                    business_id = reader.GetString(8)
+                                    business_id = reader.GetString(8),
+                                    num_reviews = reader.GetInt32(9)
                                 });
                             }
                         }
@@ -587,7 +674,11 @@ namespace milestone1
         private void ShowCheckinsBtn_Click(object sender, RoutedEventArgs e)
         {
             ShowCheckinsWindow win2 = new ShowCheckinsWindow();
-            win2.Show();
+            if (currentCell != null)
+            {
+                win2.ColumChart(currentCell.business_id);
+                win2.Show();
+            }
         }
     }
 }

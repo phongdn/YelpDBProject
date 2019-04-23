@@ -22,13 +22,13 @@ namespace milestone1
     {
         public ShowCheckinsWindow()
         {
-            InitializeComponent();
-            ColumChart();
+            //InitializeComponent();
+            //ColumChart();
         }
 
-        private void ColumChart()
+        public void ColumChart(string businessID)
         {
-            string business_id_value = "dwQEZBFen2GdihLLfWeexA";
+            string business_id_value = businessID;
             // Need to get current business ID
             List<KeyValuePair<string, int>> myChartData = new List<KeyValuePair<string, int>>();
             using (var conn = new NpgsqlConnection("Host=localhost; Username=postgres; Password=password; Database = milestone2db"))

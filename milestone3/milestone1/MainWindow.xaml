@@ -1,9 +1,10 @@
-﻿<Window x:Class="milestone1.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:milestone1"
+        xmlns:Custom="http://schemas.microsoft.com/wpf/2008/toolkit" x:Class="milestone1.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="493.852" Width="963.921">
     <Grid>
@@ -18,7 +19,10 @@
                     <GroupBox x:Name="SetCurrentUserBox" Header="Set Current User" HorizontalAlignment="Left" Height="117" Margin="7,10,0,0" VerticalAlignment="Top" Width="263">
                         <Grid HorizontalAlignment="Left" Height="107" Margin="10,0,-2.6,-12.6" VerticalAlignment="Top" Width="243" RenderTransformOrigin="0.964,-0.204">
                             <TextBox x:Name="CurrentUserTxt" HorizontalAlignment="Left" Height="22" Margin="0,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="150" RenderTransformOrigin="0.347,-0.178"/>
+                            <Button Content="Set" HorizontalAlignment="Left" Margin="158,10,0,0" VerticalAlignment="Top" Width="75"/>
+
                         </Grid>
+
                     </GroupBox>
                     <GroupBox x:Name="UserInfoBox" Header="User Information" HorizontalAlignment="Left" Height="256" Margin="11,132,0,0" VerticalAlignment="Top" Width="259">
                         <Grid HorizontalAlignment="Left" Height="264" Margin="0,-18,-12.6,-22" VerticalAlignment="Top" Width="259">
@@ -94,7 +98,12 @@
                     <Label Content="Friends who reviewed this business" Grid.Column="5" HorizontalAlignment="Left" Margin="41.2,211,0,0" Grid.Row="1" VerticalAlignment="Top"/>
                     <Button x:Name="removeReviewBtn" Content="Remove Review" Grid.Column="6" HorizontalAlignment="Left" Margin="339.6,153,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98" Click="RemoveReviewBtn_Click"/>
                     <Button x:Name="displayReviewBtn" Content="Display Review" Grid.Column="6" HorizontalAlignment="Left" Margin="193.6,153,0,0" Grid.Row="1" VerticalAlignment="Top" Width="120" Click="DisplayReviewBtn_Click"/>
-                    <Button x:Name="ShowCheckinsBtn" Content="ShowCheckins" Grid.Column="6" HorizontalAlignment="Left" Height="23" Margin="339.8,192,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98" Click="ShowCheckinsBtn_Click"/>
+                    <Button x:Name="ShowCheckinsBtn" Content="ShowCheckins" Grid.Column="6" HorizontalAlignment="Left" Height="23" Margin="339.6,177,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98" Click="ShowCheckinsBtn_Click"/>
+                    <Label Content="Sort Business Results By:" Grid.Column="6" HorizontalAlignment="Left" Margin="76.6,268,0,0" Grid.Row="1" VerticalAlignment="Top" Width="125" FontSize="10"/>
+                    <ComboBox x:Name="sortResultsBox" Grid.Column="6" HorizontalAlignment="Left" Margin="81.6,296,0,0" Grid.Row="1" VerticalAlignment="Top" Width="120"/>
+                    <DataGrid x:Name="selectedBusinessCategoriesGrid" Grid.Column="6" HorizontalAlignment="Left" Height="83" Margin="81.6,177,0,0" Grid.Row="1" VerticalAlignment="Top" Width="120"/>
+                    <DataGrid x:Name="selectedBusinessHoursGrid" Grid.Column="6" HorizontalAlignment="Left" Height="141" Margin="206.6,177,0,0" Grid.Row="1" VerticalAlignment="Top" Width="128"/>
+                    <Button x:Name="checkinBtn" Content="Checkin" Grid.Column="6" HorizontalAlignment="Left" Margin="339.6,211,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98"/>
                 </Grid>
             </TabItem>
         </TabControl>
