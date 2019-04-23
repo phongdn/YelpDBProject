@@ -57,6 +57,7 @@
                     <Label Content="Friends who reviewed this business" Grid.Column="5" HorizontalAlignment="Left" Margin="41.2,211,0,0" Grid.Row="1" VerticalAlignment="Top"/>
                     <Button x:Name="removeReviewBtn" Content="Remove Review" Grid.Column="6" HorizontalAlignment="Left" Margin="339.6,153,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98" Click="RemoveReviewBtn_Click"/>
                     <Button x:Name="displayReviewBtn" Content="Display Review" Grid.Column="6" HorizontalAlignment="Left" Margin="193.6,153,0,0" Grid.Row="1" VerticalAlignment="Top" Width="120" Click="DisplayReviewBtn_Click"/>
+                    <Button x:Name="ShowCheckinsBtn" Content="ShowCheckins" Grid.Column="6" HorizontalAlignment="Left" Height="23" Margin="339.8,192,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98" Click="ShowCheckinsBtn_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>

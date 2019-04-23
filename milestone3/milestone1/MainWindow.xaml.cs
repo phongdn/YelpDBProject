@@ -52,6 +52,7 @@ namespace milestone1
         {
             public string category_name { get; set; }
         }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -581,6 +582,12 @@ namespace milestone1
                 MessageBox.Show("\t\t\tReview Description: \n\n" + currentSelectedReview.text + "\n\n\t\t\tStars: " + currentSelectedReview.stars.ToString() + "\n\n\t\t\tReview ID: " + currentSelectedReview.review_id);
             else
                 MessageBox.Show("Please select a review to display");
+        }
+
+        private void ShowCheckinsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ShowCheckinsWindow win2 = new ShowCheckinsWindow();
+            win2.Show();
         }
     }
 }
