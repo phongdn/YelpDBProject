@@ -11,15 +11,17 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="75*"/>
             <ColumnDefinition Width="202*"/>
-            <ColumnDefinition Width="681*"/>
+            <ColumnDefinition Width="47*"/>
+            <ColumnDefinition Width="634*"/>
         </Grid.ColumnDefinitions>
-        <TabControl HorizontalAlignment="Left" Height="460" VerticalAlignment="Top" Width="961" Grid.ColumnSpan="3" Margin="0,0,-3.4,0">
+        <TabControl HorizontalAlignment="Left" Height="460" VerticalAlignment="Top" Width="961" Grid.ColumnSpan="4" Margin="0,0,-3.4,0">
             <TabItem x:Name="userInfoTab" Header="User Information" RenderTransformOrigin="-0.672,1.079">
                 <Grid Background="#FFE5E5E5">
                     <GroupBox x:Name="SetCurrentUserBox" Header="Set Current User" HorizontalAlignment="Left" Height="117" Margin="7,10,0,0" VerticalAlignment="Top" Width="263">
                         <Grid HorizontalAlignment="Left" Height="107" Margin="10,0,-2.6,-12.6" VerticalAlignment="Top" Width="243" RenderTransformOrigin="0.964,-0.204">
                             <TextBox x:Name="CurrentUserTxt" HorizontalAlignment="Left" Height="22" Margin="0,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="150" RenderTransformOrigin="0.347,-0.178"/>
-                            <Button Content="Set" HorizontalAlignment="Left" Margin="158,10,0,0" VerticalAlignment="Top" Width="75"/>
+                            <Button x:Name="setCurrentUsernameBtn" Content="Set" HorizontalAlignment="Left" Margin="158,10,0,0" VerticalAlignment="Top" Width="75" Click="SetCurrentUsernameBtn_Click"/>
+                            <DataGrid x:Name="setCurrentUserIdGrid" HorizontalAlignment="Left" Height="63" VerticalAlignment="Top" Width="150" Margin="0,37,0,0" GotFocus="SetCurrentUserIdGrid_GotFocus"/>
 
                         </Grid>
 
@@ -45,15 +47,21 @@
                             <Label x:Name="LocationLabel" Content="Location:" HorizontalAlignment="Left" Height="25" Margin="10,189,0,0" VerticalAlignment="Top" Width="55"/>
                             <Label x:Name="LatLabel" Content="lat" HorizontalAlignment="Left" Height="22" Margin="29,204,0,0" VerticalAlignment="Top" Width="36"/>
                             <Label x:Name="LongLabel" Content="long" HorizontalAlignment="Left" Height="26" Margin="29,219,0,0" VerticalAlignment="Top" Width="36"/>
-                            <TextBox x:Name="LatTextBox" HorizontalAlignment="Left" Height="20" Margin="70,204,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="102" IsReadOnly="True"/>
-                            <TextBox x:Name="LongTextBox" HorizontalAlignment="Left" Height="20" Margin="70,231,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="102" IsReadOnly="True"/>
-                            <Button x:Name="EditLocationBtn" Content="Edit" HorizontalAlignment="Left" Height="22" Margin="177,204,0,0" VerticalAlignment="Top" Width="72"/>
-                            <Button x:Name="UpdateLocationBtn" Content="Update" HorizontalAlignment="Left" Height="22" Margin="177,231,0,0" VerticalAlignment="Top" Width="72" IsEnabled="False"/>
+                            <TextBox x:Name="LatTextBox" HorizontalAlignment="Left" Height="20" Margin="70,204,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="102" IsReadOnly="False"/>
+                            <TextBox x:Name="LongTextBox" HorizontalAlignment="Left" Height="20" Margin="70,231,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="102" IsReadOnly="False"/>
+                            <Button x:Name="EditLocationBtn" Content="Edit" HorizontalAlignment="Left" Height="22" Margin="177,204,0,0" VerticalAlignment="Top" Width="72" Click="EditLocationBtn_Click"/>
+                            <Button x:Name="UpdateLocationBtn" Content="Update" HorizontalAlignment="Left" Height="22" Margin="177,231,0,0" VerticalAlignment="Top" Width="72" IsEnabled="False" Click="UpdateLocationBtn_Click"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox x:Name="FavBusinessBox" Header="Favorite Businesses" HorizontalAlignment="Left" Height="134" Margin="275,254,0,0" VerticalAlignment="Top" Width="679" RenderTransformOrigin="0.521,0.482"/>
-                    <GroupBox x:Name="FriendsBox" Header="Friends" HorizontalAlignment="Left" Height="239" Margin="275,10,0,0" VerticalAlignment="Top" Width="260"/>
-                    <GroupBox x:Name="FriendsReviewsBox" Header="What are my friends reviewing?" HorizontalAlignment="Left" Height="239" Margin="540,10,0,0" VerticalAlignment="Top" Width="404"/>
+                    <GroupBox x:Name="FavBusinessBox" Header="Favorite Businesses" HorizontalAlignment="Left" Height="134" Margin="275,254,0,0" VerticalAlignment="Top" Width="679" RenderTransformOrigin="0.521,0.482">
+                        <DataGrid x:Name="favoriteBusinessGrid" HorizontalAlignment="Left" Height="100" Margin="0,10,-2.6,0" VerticalAlignment="Top" Width="669"/>
+                    </GroupBox>
+                    <GroupBox x:Name="FriendsBox" Header="Friends" HorizontalAlignment="Left" Height="239" Margin="275,10,0,0" VerticalAlignment="Top" Width="260">
+                        <DataGrid x:Name="currentUserFriendsListGrid" HorizontalAlignment="Left" Height="219" Margin="0,10,-2.8,-13" VerticalAlignment="Top" Width="250"/>
+                    </GroupBox>
+                    <GroupBox x:Name="FriendsReviewsBox" Header="What are my friends reviewing?" HorizontalAlignment="Left" Height="239" Margin="540,10,0,0" VerticalAlignment="Top" Width="404">
+                        <DataGrid x:Name="currentSelectUserFriendsReviewGrid" HorizontalAlignment="Left" Height="219" Margin="0,10,-2.8,-13" VerticalAlignment="Top" Width="394"/>
+                    </GroupBox>
                     <Button x:Name="RemoveFavBtn" Content="Remove from Favorites" HorizontalAlignment="Left" Height="22" Margin="11,400,0,0" VerticalAlignment="Top" Width="138" RenderTransformOrigin="0.626,0.616"/>
                 </Grid>
             </TabItem>
@@ -65,45 +73,47 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0*"/>
-                        <ColumnDefinition Width="51*"/>
+                        <ColumnDefinition Width="37*"/>
+                        <ColumnDefinition Width="14*"/>
                         <ColumnDefinition Width="18*"/>
                         <ColumnDefinition Width="6*"/>
                         <ColumnDefinition Width="85*"/>
                         <ColumnDefinition Width="346*"/>
                         <ColumnDefinition Width="448*"/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="stateList" HorizontalAlignment="Left" Margin="6.8,13,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="StateList_SelectionChanged" Grid.ColumnSpan="4" Grid.Column="2" Height="22"/>
-                    <DataGrid x:Name="businessGrid" HorizontalAlignment="Left" Height="214" Margin="41.2,35,0,0" VerticalAlignment="Top" Width="381" FontSize="14" GotFocus="BusinessGrid_GotFocus" Grid.Column="5" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
-                    <Label Content="City" HorizontalAlignment="Left" Margin="4,35,0,0" VerticalAlignment="Top" FontSize="14" Grid.Column="1" Height="29" Width="34"/>
-                    <ComboBox x:Name="cityList" HorizontalAlignment="Left" Margin="6.8,41,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="CityList_SelectionChanged" Grid.ColumnSpan="4" Grid.Column="2" Height="22"/>
+                    <ComboBox x:Name="stateList" HorizontalAlignment="Left" Margin="6.8,13,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="StateList_SelectionChanged" Grid.ColumnSpan="4" Grid.Column="3" Height="22"/>
+                    <DataGrid x:Name="businessGrid" HorizontalAlignment="Left" Height="214" Margin="41.2,35,0,0" VerticalAlignment="Top" Width="381" FontSize="14" GotFocus="BusinessGrid_GotFocus" Grid.Column="6" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+                    <Label Content="City" HorizontalAlignment="Left" Margin="4,35,0,0" VerticalAlignment="Top" FontSize="14" Grid.Column="1" Height="29" Width="34" Grid.ColumnSpan="2"/>
+                    <ComboBox x:Name="cityList" HorizontalAlignment="Left" Margin="6.8,41,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="CityList_SelectionChanged" Grid.ColumnSpan="4" Grid.Column="3" Height="22"/>
                     <Label Content="Zip" HorizontalAlignment="Left" Margin="4,69,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.173,0.058" Grid.Column="1" Height="26" Width="27"/>
-                    <Label Content="Categories" HorizontalAlignment="Left" Margin="0,99,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.125,0.509" Grid.ColumnSpan="3" Height="26" Width="67" Grid.RowSpan="2"/>
-                    <ComboBox x:Name="zipcodeList" HorizontalAlignment="Left" Margin="6.8,72,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ZipcodeList_SelectionChanged" Grid.ColumnSpan="4" Grid.Column="2" Height="22"/>
-                    <Label Content="Reviews" Grid.Column="6" HorizontalAlignment="Left" Margin="114.8,4,0,0" VerticalAlignment="Top" Height="26" Width="51"/>
-                    <DataGrid x:Name="reviewsGrid" Grid.Column="6" HorizontalAlignment="Left" Height="214" Margin="80.8,35,0,0" VerticalAlignment="Top" Width="357" SelectionChanged="DataGrid_SelectionChanged" GotFocus="ReviewsGrid_GotFocus" Grid.RowSpan="2"/>
-                    <Button x:Name="addReviewButton" Content="Add Review" Grid.Column="6" HorizontalAlignment="Left" Margin="90.6,153,0,0" VerticalAlignment="Top" Width="75" GotFocus="AddReviewButton_GotFocus" Grid.Row="1" Height="19" RenderTransformOrigin="0.565,0.494"/>
-                    <DataGrid x:Name="chosenCategoryGrid" Grid.ColumnSpan="5" Grid.Column="1" HorizontalAlignment="Left" Height="102" Margin="0,192,0,0" Grid.Row="1" VerticalAlignment="Top" Width="178" GotFocus="ChosenCategoryGrid_GotFocus"/>
-                    <DataGrid x:Name="categoriesGrid" Grid.ColumnSpan="5" HorizontalAlignment="Left" Height="148" Margin="5,15,0,0" Grid.Row="1" VerticalAlignment="Top" Width="174" Grid.Column="1" SelectionChanged="CategoriesGrid_SelectionChanged" GotFocus="CategoriesGrid_GotFocus"/>
-                    <Label Content="State" HorizontalAlignment="Left" Margin="5,13,0,0" VerticalAlignment="Top" FontSize="14" Grid.Column="1" Height="29" Width="46"/>
-                    <Button x:Name="categoryAddBtn" Content="Add" Grid.Column="1" HorizontalAlignment="Left" Margin="5,168,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.ColumnSpan="4" Click="CategoryAddBtn_Click"/>
-                    <Button x:Name="categoryRemoveBtn" Content="Remove" Grid.Column="4" HorizontalAlignment="Left" Margin="28,168,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.ColumnSpan="2" Click="CategoryRemoveBtn_Click"/>
-                    <Button x:Name="searchBusinessBtn" Grid.ColumnSpan="5" Content="Search Business" Grid.Column="1" HorizontalAlignment="Left" Margin="0,299.4,0,0" Grid.Row="1" VerticalAlignment="Top" Width="178" Click="SearchBusinessBtn_Click"/>
-                    <Label Content="Search Results" Grid.Column="5" HorizontalAlignment="Left" Margin="41,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.071,0.201"/>
-                    <Label Content="# of businesses" Grid.Column="5" HorizontalAlignment="Left" Margin="231.2,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.811,0.386"/>
-                    <Label x:Name="numBusinessLabel" Content="" Grid.Column="5" Margin="322.2,13,0.2,0" VerticalAlignment="Top" RenderTransformOrigin="0.286,0.468"/>
-                    <Label Content="Selected Business" Grid.Column="5" HorizontalAlignment="Left" Margin="41.2,141,0,0" Grid.Row="1" VerticalAlignment="Top" RenderTransformOrigin="-0.971,-0.45"/>
-                    <TextBox x:Name="businessNameTextBox" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="41.2,164,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Grid.ColumnSpan="2"/>
-                    <TextBox x:Name="businessAddressTextBox" Grid.Column="5" HorizontalAlignment="Left" Height="23" Margin="41.2,192,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Grid.ColumnSpan="2"/>
-                    <DataGrid x:Name="friendsReviewsGrid" Grid.Column="5" HorizontalAlignment="Left" Height="82" Margin="41.2,237,0,0" Grid.Row="1" VerticalAlignment="Top" Width="381" Grid.ColumnSpan="2"/>
-                    <Label Content="Friends who reviewed this business" Grid.Column="5" HorizontalAlignment="Left" Margin="41.2,211,0,0" Grid.Row="1" VerticalAlignment="Top"/>
-                    <Button x:Name="removeReviewBtn" Content="Remove Review" Grid.Column="6" HorizontalAlignment="Left" Margin="339.6,153,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98" Click="RemoveReviewBtn_Click"/>
-                    <Button x:Name="displayReviewBtn" Content="Display Review" Grid.Column="6" HorizontalAlignment="Left" Margin="193.6,153,0,0" Grid.Row="1" VerticalAlignment="Top" Width="120" Click="DisplayReviewBtn_Click"/>
-                    <Button x:Name="ShowCheckinsBtn" Content="ShowCheckins" Grid.Column="6" HorizontalAlignment="Left" Height="23" Margin="339.6,177,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98" Click="ShowCheckinsBtn_Click"/>
-                    <Label Content="Sort Business Results By:" Grid.Column="6" HorizontalAlignment="Left" Margin="76.6,268,0,0" Grid.Row="1" VerticalAlignment="Top" Width="125" FontSize="10"/>
-                    <ComboBox x:Name="sortResultsBox" Grid.Column="6" HorizontalAlignment="Left" Margin="81.6,296,0,0" Grid.Row="1" VerticalAlignment="Top" Width="120"/>
-                    <DataGrid x:Name="selectedBusinessCategoriesGrid" Grid.Column="6" HorizontalAlignment="Left" Height="83" Margin="81.6,177,0,0" Grid.Row="1" VerticalAlignment="Top" Width="120"/>
-                    <DataGrid x:Name="selectedBusinessHoursGrid" Grid.Column="6" HorizontalAlignment="Left" Height="141" Margin="206.6,177,0,0" Grid.Row="1" VerticalAlignment="Top" Width="128"/>
-                    <Button x:Name="checkinBtn" Content="Checkin" Grid.Column="6" HorizontalAlignment="Left" Margin="339.6,211,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98"/>
+                    <Label Content="Categories" HorizontalAlignment="Left" Margin="0,99,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.125,0.509" Grid.ColumnSpan="4" Height="26" Width="67" Grid.RowSpan="2"/>
+                    <ComboBox x:Name="zipcodeList" HorizontalAlignment="Left" Margin="6.8,72,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ZipcodeList_SelectionChanged" Grid.ColumnSpan="4" Grid.Column="3" Height="22"/>
+                    <Label Content="Reviews" Grid.Column="7" HorizontalAlignment="Left" Margin="114.8,4,0,0" VerticalAlignment="Top" Height="26" Width="51"/>
+                    <DataGrid x:Name="reviewsGrid" Grid.Column="7" HorizontalAlignment="Left" Height="214" Margin="80.8,35,0,0" VerticalAlignment="Top" Width="357" SelectionChanged="DataGrid_SelectionChanged" GotFocus="ReviewsGrid_GotFocus" Grid.RowSpan="2"/>
+                    <Button x:Name="addReviewButton" Content="Add Review" Grid.Column="7" HorizontalAlignment="Left" Margin="90.8,153,0,0" VerticalAlignment="Top" Width="75" GotFocus="AddReviewButton_GotFocus" Grid.Row="1" Height="19" RenderTransformOrigin="0.565,0.494"/>
+                    <DataGrid x:Name="chosenCategoryGrid" Grid.ColumnSpan="6" Grid.Column="1" HorizontalAlignment="Left" Height="102" Margin="0,192,0,0" Grid.Row="1" VerticalAlignment="Top" Width="178" GotFocus="ChosenCategoryGrid_GotFocus"/>
+                    <DataGrid x:Name="categoriesGrid" Grid.ColumnSpan="6" HorizontalAlignment="Left" Height="148" Margin="5,15,0,0" Grid.Row="1" VerticalAlignment="Top" Width="174" Grid.Column="1" SelectionChanged="CategoriesGrid_SelectionChanged" GotFocus="CategoriesGrid_GotFocus"/>
+                    <Label Content="State" HorizontalAlignment="Left" Margin="5,13,0,0" VerticalAlignment="Top" FontSize="14" Grid.Column="1" Height="29" Width="46" Grid.ColumnSpan="2"/>
+                    <Button x:Name="categoryAddBtn" Content="Add" Grid.Column="1" HorizontalAlignment="Left" Margin="5,168,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.ColumnSpan="5" Click="CategoryAddBtn_Click"/>
+                    <Button x:Name="categoryRemoveBtn" Content="Remove" Grid.Column="5" HorizontalAlignment="Left" Margin="28,168,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Grid.ColumnSpan="2" Click="CategoryRemoveBtn_Click"/>
+                    <Button x:Name="searchBusinessBtn" Grid.ColumnSpan="6" Content="Search Business" Grid.Column="1" HorizontalAlignment="Left" Margin="0,299,0,0" Grid.Row="1" VerticalAlignment="Top" Width="178" Click="SearchBusinessBtn_Click"/>
+                    <Label Content="Search Results" Grid.Column="6" HorizontalAlignment="Left" Margin="41.2,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.071,0.201"/>
+                    <Label Content="# of businesses" Grid.Column="6" HorizontalAlignment="Left" Margin="231.2,13,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.811,0.386"/>
+                    <Label x:Name="numBusinessLabel" Content="___" Grid.Column="6" Margin="322.2,13,0.2,0" VerticalAlignment="Top" RenderTransformOrigin="0.286,0.468"/>
+                    <Label Content="Selected Business" Grid.Column="6" HorizontalAlignment="Left" Margin="41.2,141,0,0" Grid.Row="1" VerticalAlignment="Top" RenderTransformOrigin="-0.971,-0.45"/>
+                    <TextBox x:Name="businessNameTextBox" Grid.Column="6" HorizontalAlignment="Left" Height="23" Margin="41.2,164,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="businessAddressTextBox" Grid.Column="6" HorizontalAlignment="Left" Height="23" Margin="41.2,192,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="381" Grid.ColumnSpan="2"/>
+                    <DataGrid x:Name="friendsReviewsGrid" Grid.Column="6" HorizontalAlignment="Left" Height="82" Margin="41.2,237,0,0" Grid.Row="1" VerticalAlignment="Top" Width="381" Grid.ColumnSpan="2"/>
+                    <Label Content="Friends who reviewed this business" Grid.Column="6" HorizontalAlignment="Left" Margin="41.2,211,0,0" Grid.Row="1" VerticalAlignment="Top"/>
+                    <Button x:Name="removeReviewBtn" Content="Remove Review" Grid.Column="7" HorizontalAlignment="Left" Margin="339.8,153,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98" Click="RemoveReviewBtn_Click"/>
+                    <Button x:Name="displayReviewBtn" Content="Display Review" Grid.Column="7" HorizontalAlignment="Left" Margin="193.8,153,0,0" Grid.Row="1" VerticalAlignment="Top" Width="120" Click="DisplayReviewBtn_Click"/>
+                    <Button x:Name="ShowCheckinsBtn" Content="ShowCheckins" Grid.Column="7" HorizontalAlignment="Left" Height="23" Margin="339.8,177,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98" Click="ShowCheckinsBtn_Click"/>
+                    <Label Content="Sort Business Results By:" Grid.Column="7" HorizontalAlignment="Left" Margin="76.8,268,0,0" Grid.Row="1" VerticalAlignment="Top" Width="125" FontSize="10"/>
+                    <ComboBox x:Name="sortResultsBox" Grid.Column="7" HorizontalAlignment="Left" Margin="81.8,296,0,0" Grid.Row="1" VerticalAlignment="Top" Width="120"/>
+                    <DataGrid x:Name="selectedBusinessCategoriesGrid" Grid.Column="7" HorizontalAlignment="Left" Height="83" Margin="81.8,177,0,0" Grid.Row="1" VerticalAlignment="Top" Width="120"/>
+                    <DataGrid x:Name="selectedBusinessHoursGrid" Grid.Column="7" HorizontalAlignment="Left" Height="141" Margin="206.8,177,0,0" Grid.Row="1" VerticalAlignment="Top" Width="128"/>
+                    <Button x:Name="checkinBtn" Content="Checkin" Grid.Column="7" HorizontalAlignment="Left" Margin="339.8,211,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98"/>
+                    <Button x:Name="addToFavoriteBtn" Content="Add to Favorites" Grid.Column="7" HorizontalAlignment="Left" Margin="339.6,237,0,0" Grid.Row="1" VerticalAlignment="Top" Width="98"/>
                 </Grid>
             </TabItem>
         </TabControl>

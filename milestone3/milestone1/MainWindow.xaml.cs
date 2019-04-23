@@ -24,7 +24,13 @@ namespace milestone1
         private Business currentCell; //should be renamed currentSelectedBusiness for easier reading
         private Categories currentSelectedCategory;
         private Reviews currentSelectedReview;
+        private User currentSelectedUser;
+
         private string currentUsername = "";
+        private double currentLat = 0; //latitude
+        private double currentLng = 0; //longitude
+
+        private List<string> friendsId = new List<string>();
         public class Business
         {
 
@@ -61,6 +67,28 @@ namespace milestone1
             public string close { get; set; }
         }
 
+        public class User
+        {
+            public string user_id { get; set; }
+            public double average_stars { get; set; }
+            public int cool { get; set; }
+            public int funny { get; set; }
+            public int useful { get; set; }
+            public string user_name { get; set; }
+            public int fans { get; set; }
+            public string yelping_since { get; set; }
+
+        }
+
+        public class friendReview
+        {
+            public string text { get; set; }
+            public string business_name { get; set; }
+            public string user_name { get; set; }
+            public string city { get; set; }
+            public string date { get; set; }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -69,7 +97,8 @@ namespace milestone1
             cityList.IsEnabled = zipcodeList.IsEnabled = categoriesGrid.IsEnabled = addReviewButton.IsEnabled = categoryAddBtn.IsEnabled =
                 categoryRemoveBtn.IsEnabled = chosenCategoryGrid.IsEnabled = searchBusinessBtn.IsEnabled = removeReviewBtn.IsEnabled = 
                 friendsReviewsGrid.IsEnabled = businessAddressTextBox.IsEnabled = businessNameTextBox.IsEnabled = ShowCheckinsBtn.IsEnabled =
-                selectedBusinessCategoriesGrid.IsEnabled = selectedBusinessHoursGrid.IsEnabled = sortResultsBox.IsEnabled =  false; //prevents user misuse
+                selectedBusinessCategoriesGrid.IsEnabled = selectedBusinessHoursGrid.IsEnabled = sortResultsBox.IsEnabled = 
+                LatTextBox.IsEnabled = LongTextBox.IsEnabled = UpdateLocationBtn.IsEnabled = false; //prevents user misuse
 
             addSorts();
             addColumns2Grid(); 
@@ -295,6 +324,68 @@ namespace milestone1
             col17.Binding = new Binding("close");
             col17.Width = 50;
             selectedBusinessHoursGrid.Columns.Add(col17);
+
+
+            //selected username id grid
+            DataGridTextColumn col19 = new DataGridTextColumn(); //out of order
+            col19.Header = "User ID";
+            col19.Binding = new Binding("user_id");
+            setCurrentUserIdGrid.Columns.Add(col19);
+            setCurrentUserIdGrid.HeadersVisibility = DataGridHeadersVisibility.None;
+
+            //selected username friends list grid
+            DataGridTextColumn col20 = new DataGridTextColumn(); //out of order
+            col20.Header = "Name";
+            col20.Binding = new Binding("user_name");
+            currentUserFriendsListGrid.Columns.Add(col20);
+
+            DataGridTextColumn col21 = new DataGridTextColumn(); //out of order
+            col21.Header = "Avg Stars";
+            col21.Binding = new Binding("average_stars");
+            currentUserFriendsListGrid.Columns.Add(col21);
+
+            DataGridTextColumn col22 = new DataGridTextColumn(); //out of order
+            col22.Header = "Yelping Since";
+            col22.Binding = new Binding("yelping_since");
+            currentUserFriendsListGrid.Columns.Add(col22);
+
+            //selected username friends recent review grid (currentSelectUserFriendsReviewGrid)
+            DataGridTextColumn col23 = new DataGridTextColumn(); //out of order
+            col23.Header = "Name";
+            col23.Binding = new Binding("user_name");
+            currentSelectUserFriendsReviewGrid.Columns.Add(col23);
+
+            DataGridTextColumn col24 = new DataGridTextColumn(); //out of order
+            col24.Header = "Business";
+            col24.Binding = new Binding("business_name");
+            currentSelectUserFriendsReviewGrid.Columns.Add(col24);
+
+            DataGridTextColumn col25 = new DataGridTextColumn(); //out of order
+            col25.Header = "City";
+            col25.Binding = new Binding("city");
+            currentSelectUserFriendsReviewGrid.Columns.Add(col25);
+
+            DataGridTextColumn col26 = new DataGridTextColumn(); //out of order
+            col26.Header = "Text";
+            col26.Binding = new Binding("text");
+            currentSelectUserFriendsReviewGrid.Columns.Add(col26);
+
+
+            //specific business freinds reviews (friendsreviewsgrid)
+            DataGridTextColumn col27 = new DataGridTextColumn(); //out of order
+            col27.Header = "Name";
+            col27.Binding = new Binding("user_name");
+            friendsReviewsGrid.Columns.Add(col27);
+
+            DataGridTextColumn col28 = new DataGridTextColumn(); //out of order
+            col28.Header = "date";
+            col28.Binding = new Binding("date");
+            friendsReviewsGrid.Columns.Add(col28);
+
+            DataGridTextColumn col29 = new DataGridTextColumn(); //out of order
+            col29.Header = "Text";
+            col29.Binding = new Binding("text");
+            friendsReviewsGrid.Columns.Add(col29);
         }
 
         private void StateList_SelectionChanged(object sender, SelectionChangedEventArgs e) //simply chooses a state, we don't want to list the names until a city is chosen
@@ -431,14 +522,11 @@ namespace milestone1
             selectedBusinessHoursGrid.IsEnabled = true;
             selectedBusinessCategoriesGrid.IsEnabled = true;
 
-            if(currentUsername != "")
-            {
-                friendsReviewsGrid.IsEnabled = true;
-            }
+           
 
             //MessageBox.Show("name = "+ temp.name+" city =  "+ temp.city + " statecode = " + temp.state);
-            
-            
+
+
             using (var conn = new NpgsqlConnection(buildConnString()))
             {
                 conn.Open();
@@ -477,6 +565,25 @@ namespace milestone1
                         {
                             //open and close are SQL time objects
                             selectedBusinessHoursGrid.Items.Add(new Hours() { day = reader.GetString(0), close = reader.GetValue(1).ToString(), open = reader.GetValue(2).ToString() });
+                        }
+                    }
+
+                    if (currentSelectedUser != null)
+                    {
+                        friendsReviewsGrid.IsEnabled = true;
+                        friendsReviewsGrid.Items.Clear();
+
+                        //populate friends reviews grid
+                        foreach(string id in friendsId)
+                        {
+                            cmd.CommandText = "SELECT user_name, dates, text FROM Users, Review WHERE Users.user_id = Review.user_id AND Review.business_id = '" + currentCell.business_id + "' AND Review.user_id = '" + id + "';";
+                            using (var reader = cmd.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {                              
+                                    friendsReviewsGrid.Items.Add(new friendReview() { user_name = reader.GetString(0), date = reader.GetValue(1).ToString(), text = reader.GetString(2) });
+                                }
+                            }
                         }
                     }
                 }
@@ -537,6 +644,8 @@ namespace milestone1
         private void SearchBusinessBtn_Click(object sender, RoutedEventArgs e)
         {
             businessGrid.Items.Clear(); //removes appending of items for each search
+            reviewsGrid.Items.Clear();
+            sortResultsBox.IsEnabled = true;
             currentSelectedReview = null;
             currentCell = null; //currentSelectedBusiness //set to null to clear out previous selected business
 
@@ -679,6 +788,108 @@ namespace milestone1
                 win2.ColumChart(currentCell.business_id);
                 win2.Show();
             }
+        }
+
+        private void SetCurrentUsernameBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if(CurrentUserTxt.Text != "")
+            {
+                currentUsername = CurrentUserTxt.Text;
+
+                using (var conn = new NpgsqlConnection(buildConnString()))
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = conn;
+                        cmd.CommandText = "SELECT user_id, average_stars, cool, funny, useful, fans, yelping_since FROM Users WHERE user_name = '" + currentUsername + "';";
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                setCurrentUserIdGrid.Items.Add(new User() { user_id = reader.GetString(0), average_stars = reader.GetDouble(1), cool = reader.GetInt32(2), funny = reader.GetInt32(3), useful = reader.GetInt32(4), fans = reader.GetInt32(5), yelping_since = reader.GetValue(6).ToString(), user_name = currentUsername});
+                            }
+                        }
+                    }
+                    conn.Close();
+                }
+            }
+        }
+
+        private void SetCurrentUserIdGrid_GotFocus(object sender, RoutedEventArgs e)
+        {
+            currentSelectedUser = (User)setCurrentUserIdGrid.CurrentCell.Item;
+
+            NameTextBox.Text = currentSelectedUser.user_name;
+            StarsTextBox.Text = Convert.ToString(currentSelectedUser.average_stars);
+            FansTextBox.Text = Convert.ToString(currentSelectedUser.fans);
+            YelpingSinceTextBox.Text = currentSelectedUser.yelping_since;
+            FunnyTextBox.Text = Convert.ToString(currentSelectedUser.funny);
+            UsefulTextBox.Text = Convert.ToString(currentSelectedUser.useful);
+            CoolTextBox.Text = Convert.ToString(currentSelectedUser.cool);
+
+            //List<string> friendsId = new List<string>();
+            friendsId = new List<string>(); //clear out old list
+
+            using (var conn = new NpgsqlConnection(buildConnString()))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "SELECT friend_id FROM Friends WHERE user_id = '" + currentSelectedUser.user_id + "';";
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            friendsId.Add( reader.GetString(0) ); //populate list of friend Id's
+                        }
+                    }
+
+                    foreach (string id in friendsId)
+                    {
+                        //populate friends grid
+                        cmd.CommandText = "SELECT user_name, average_stars, cool, funny, useful, fans, yelping_since FROM Users WHERE user_id = '" + id + "';";
+                        var tempUsername = "";
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read()) //should only iterate once
+                            {
+                                currentUserFriendsListGrid.Items.Add(new User() { user_name = reader.GetString(0), average_stars = reader.GetDouble(1), cool = reader.GetInt32(2), funny = reader.GetInt32(3), useful = reader.GetInt32(4), fans = reader.GetInt32(5), yelping_since = reader.GetValue(6).ToString(), user_id = id });
+                                tempUsername = reader.GetString(0); 
+                            }
+                        }
+
+                        //populate friends review grid 
+                        cmd.CommandText = "SELECT business_name, city, text FROM Business, Review WHERE Business.business_id = Review.business_id AND Review.user_id = '" + id + "';";
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            reader.Read(); //only read the first line since ordered by date and we only need most recent
+                            currentSelectUserFriendsReviewGrid.Items.Add(new friendReview() { user_name = tempUsername, business_name = reader.GetString(0), city = reader.GetString(1), text = reader.GetString(2) });
+                        }
+                    }
+
+
+                }
+                conn.Close();
+            }
+        }
+
+        private void EditLocationBtn_Click(object sender, RoutedEventArgs e)
+        {
+            LatTextBox.IsEnabled = LongTextBox.IsEnabled = true;
+            UpdateLocationBtn.IsEnabled = true;
+            EditLocationBtn.IsEnabled = false;
+        }
+
+        private void UpdateLocationBtn_Click(object sender, RoutedEventArgs e)
+        {
+            LatTextBox.IsEnabled = LongTextBox.IsEnabled = false;
+            currentLat = Convert.ToDouble(LatTextBox.Text);
+            currentLng = Convert.ToDouble(LongTextBox.Text);
+            EditLocationBtn.IsEnabled = true;
+            UpdateLocationBtn.IsEnabled = false;
         }
     }
 }
