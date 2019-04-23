@@ -21,8 +21,10 @@ namespace milestone1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Business currentCell;
+        private Business currentCell; //should be renamed currentSelectedBusiness for easier reading
         private Categories currentSelectedCategory;
+        private Reviews currentSelectedReview;
+        private string currentUsername = "";
         public class Business
         {
 
@@ -43,6 +45,7 @@ namespace milestone1
         {
             public string text { get; set; }
             public double stars { get; set; }
+            public string review_id { get; set; }
         }
 
         public class Categories
@@ -55,7 +58,8 @@ namespace milestone1
             addStates();
             //addCities(); //called in the StateList_SelectionChanged function
             cityList.IsEnabled = zipcodeList.IsEnabled = categoriesGrid.IsEnabled = addReviewButton.IsEnabled = categoryAddBtn.IsEnabled =
-                categoryRemoveBtn.IsEnabled = chosenCategoryGrid.IsEnabled = searchBusinessBtn.IsEnabled = false; //prevents user misuse
+                categoryRemoveBtn.IsEnabled = chosenCategoryGrid.IsEnabled = searchBusinessBtn.IsEnabled = removeReviewBtn.IsEnabled = 
+                friendsReviewsGrid.IsEnabled = businessAddressTextBox.IsEnabled = businessNameTextBox.IsEnabled = false; //prevents user misuse
 
             addColumns2Grid(); //creates name,state,city columns
         }
@@ -209,7 +213,7 @@ namespace milestone1
             DataGridTextColumn col5 = new DataGridTextColumn();
             col5.Header = "Text";
             col5.Binding = new Binding("text");
-            col5.Width = 100;
+            col5.Width = 200;
             reviewsGrid.Columns.Add(col5);
 
             DataGridTextColumn col6 = new DataGridTextColumn();
@@ -217,6 +221,12 @@ namespace milestone1
             col6.Binding = new Binding("stars");
             col6.Width = 100;
             reviewsGrid.Columns.Add(col6);
+
+            DataGridTextColumn col13 = new DataGridTextColumn(); //out of order
+            col13.Header = "Review ID";
+            col13.Binding = new Binding("review_id");
+            col13.Width = 100;
+            reviewsGrid.Columns.Add(col13);
 
             //categories Grid
             DataGridTextColumn col7 = new DataGridTextColumn();
@@ -351,6 +361,18 @@ namespace milestone1
         {
             reviewsGrid.Items.Clear(); //prevent appending previous list
             currentCell = (Business)businessGrid.CurrentCell.Item;
+
+            //update textbox below:
+            businessNameTextBox.IsEnabled = true;
+            businessNameTextBox.Text = currentCell.name;
+            businessAddressTextBox.IsEnabled = true;
+            businessAddressTextBox.Text = currentCell.address;
+
+            if(currentUsername != "")
+            {
+                friendsReviewsGrid.IsEnabled = true;
+            }
+
             //MessageBox.Show("name = "+ temp.name+" city =  "+ temp.city + " statecode = " + temp.state);
             
             //Populate the list of reviews
@@ -360,15 +382,16 @@ namespace milestone1
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "SELECT text, review_stars FROM Review, Business WHERE Review.business_id = Business.business_id AND Business.business_name = '" + currentCell.name + "';";
+                    cmd.CommandText = "SELECT text, review_stars, review_id FROM Review, Business WHERE Review.business_id = Business.business_id AND Business.business_name = '" + currentCell.name + "';";
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            reviewsGrid.Items.Add(new Reviews() { text = reader.GetString(0), stars = reader.GetDouble(1)});
+                            reviewsGrid.Items.Add(new Reviews() { text = reader.GetString(0), stars = reader.GetDouble(1), review_id = reader.GetString(2) });
                         }
                     }
                     addReviewButton.IsEnabled = true;
+                    removeReviewBtn.IsEnabled = true;
                 }
                 conn.Close();
             }
@@ -392,8 +415,7 @@ namespace milestone1
 
         private void ReviewsGrid_GotFocus(object sender, RoutedEventArgs e)
         {
-            Reviews temp = (Reviews)reviewsGrid.CurrentCell.Item;
-            MessageBox.Show("\t\t\tReview Description: \n\n" + temp.text + "\n\n\t\t\tStars: " + temp.stars.ToString());
+            currentSelectedReview = (Reviews)reviewsGrid.CurrentCell.Item;
         }
 
         private void CategoriesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -428,6 +450,15 @@ namespace milestone1
         private void SearchBusinessBtn_Click(object sender, RoutedEventArgs e)
         {
             businessGrid.Items.Clear(); //removes appending of items for each search
+            currentSelectedReview = null;
+            currentCell = null; //currentSelectedBusiness //set to null to clear out previous selected business
+
+            businessAddressTextBox.Text = "";
+            businessAddressTextBox.IsEnabled = false;
+            businessNameTextBox.Text = "";
+            businessNameTextBox.IsEnabled = false;
+
+            
             string baseCmd = "SELECT DISTINCT business_name, address, city, statecode, postalcode, business_stars, review_rating, num_checkins, Business.business_id" +
                 " FROM Business, Categories WHERE city = '" + cityList.SelectedItem.ToString() +
                             "' AND statecode = '" + stateList.SelectedItem.ToString() + "' AND postalcode = '" + zipcodeList.SelectedItem.ToString() + "'"; 
@@ -519,6 +550,37 @@ namespace milestone1
 
             //update label for # of businesses
             numBusinessLabel.Content = businessGrid.Items.Count.ToString();
+        }
+
+        private void RemoveReviewBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if(currentSelectedReview != null)
+            {
+                using (var conn = new NpgsqlConnection(buildConnString()))
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = conn;
+                        cmd.CommandText = "DELETE FROM Review WHERE review_id = '" + currentSelectedReview.review_id + "';";
+                        cmd.ExecuteReader(); //execute command
+                    }
+                    conn.Close();
+                }
+                currentSelectedReview = null;
+            }
+            else
+            {
+                MessageBox.Show("You need to select a review to remove");
+            }
+        }
+
+        private void DisplayReviewBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (currentSelectedReview != null)
+                MessageBox.Show("\t\t\tReview Description: \n\n" + currentSelectedReview.text + "\n\n\t\t\tStars: " + currentSelectedReview.stars.ToString() + "\n\n\t\t\tReview ID: " + currentSelectedReview.review_id);
+            else
+                MessageBox.Show("Please select a review to display");
         }
     }
 }
